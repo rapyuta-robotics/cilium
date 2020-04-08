@@ -21,13 +21,13 @@ import (
 	"github.com/cilium/cilium/operator/identity"
 	operatorOption "github.com/cilium/cilium/operator/option"
 	"github.com/cilium/cilium/pkg/controller"
-	"github.com/cilium/cilium/pkg/k8s/apis/cilium.io/v2"
+	v2 "github.com/cilium/cilium/pkg/k8s/apis/cilium.io/v2"
 	"github.com/cilium/cilium/pkg/k8s/informer"
 	"github.com/cilium/cilium/pkg/k8s/types"
 	"github.com/cilium/cilium/pkg/logging/logfields"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -107,7 +107,7 @@ func startCRDIdentityGC() {
 		})
 }
 
-func startManagingK8sIdentities() {
+func startManagingK8sIdentities() error {
 	identityHeartbeat = identity.NewIdentityHeartbeatStore(operatorOption.Config.IdentityHeartbeatTimeout)
 
 	identityStore = cache.NewStore(cache.DeletionHandlingMetaNamespaceKeyFunc)
@@ -152,5 +152,9 @@ func startManagingK8sIdentities() {
 		identityStore,
 	)
 
+	if err := waitForCRD(apiextensionsK8sClient, "ciliumidentities.cilium.io"); err != nil {
+		return err
+	}
 	go identityInformer.Run(wait.NeverStop)
+	return nil
 }
