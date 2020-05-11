@@ -86,7 +86,13 @@ space:= $(empty) $(empty)
 
 define generate_k8s_api_deepcopy_deepequal
 	$(call generate_k8s_api,deepcopy,github.com/cilium/cilium/pkg/k8s/client,$(1),$(2))
-
+	# Explanation for the 'subst' below:
+	#   $(subst ",,$(subst :,/,$(pkg))) - replace all ':' with '/' and replace
+	#    all '"' with '' from $pkg
+	#   $(foreach pkg,$(2),$(1)/$(subst ",,$(subst :,/,$(pkg)))) - for each
+	#    "$pkg", with the characters replaced, create a new string with the
+	#    prefix $(1)
+	#   Finally replace all spaces with commas from the generated strings.
 	$(call generate_deepequal,"$(subst $(space),$(comma),$(foreach pkg,$(2),$(1)/$(subst ",,$(subst :,/,$(pkg)))))")
 endef
 
@@ -418,6 +424,7 @@ generate-k8s-api:
 	networking:v1\
 	core:v1")
 	$(call generate_k8s_api_deepcopy_deepequal,github.com/cilium/cilium/pkg/k8s/slim/k8s/apis,"$\
+	util:intstr\
 	meta:v1")
 	$(call generate_k8s_api_deepcopy_deepequal,github.com/cilium/cilium/pkg,"$\
 	aws:types\
@@ -449,6 +456,7 @@ generate-k8s-api:
 	$(call generate_k8s_api_deepcopy_deepequal,github.com/cilium/cilium,"$\
 	pkg:bpf\
 	pkg:k8s\
+	pkg:labels\
 	pkg:loadbalancer\
 	pkg:tuple")
 
