@@ -42,6 +42,16 @@ DEFINE_IPV6(IPV6_DIRECT_ROUTING, 0xbe, 0xef, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 
 #endif
 #endif /* ENABLE_NODEPORT */
 
+#ifdef IPV6_NODEPORT_VAL
+# define BPF_V6_NODEPORT(dst)				\
+	({						\
+		union v6addr tmp = IPV6_NODEPORT_VAL;	\
+		dst = tmp;				\
+	})
+#else
+# define BPF_V6_NODEPORT(dst)	BPF_V6(dst, IPV6_NODEPORT)
+#endif
+
 static __always_inline __maybe_unused void
 bpf_skip_nodeport_clear(struct __ctx_buff *ctx)
 {
@@ -1370,7 +1380,7 @@ static __always_inline int nodeport_nat_fwd(struct __ctx_buff *ctx,
 			BPF_V6(addr, ROUTER_IP);
 		else
 #endif
-			BPF_V6(addr, IPV6_NODEPORT);
+			BPF_V6_NODEPORT(addr);
 		return nodeport_nat_ipv6_fwd(ctx, &addr);
 	}
 #endif /* ENABLE_IPV6 */
