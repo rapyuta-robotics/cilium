@@ -333,7 +333,7 @@ type CiliumClusterwideNetworkPolicyList struct {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// CiliumEndpoint is the status of a Cilium policy rule
+// CiliumEndpoint is a CRD that represents an endpoint managed by Cilium.
 // +k8s:openapi-gen=false
 type CiliumEndpoint struct {
 	// +k8s:openapi-gen=false
