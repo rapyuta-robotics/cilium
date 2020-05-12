@@ -15,9 +15,9 @@
 package utils
 
 import (
+	k8sConst "github.com/cilium/cilium/pkg/k8s/apis/cilium.io"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/kubernetes/pkg/kubelet/types"
 )
 
 // ExtractNamespace extracts the namespace of ObjectMeta.
@@ -42,6 +42,6 @@ func GetObjUID(obj metav1.Object) string {
 // IsInfraContainer returns true if the given set of labels represent a infra
 // container.
 func IsInfraContainer(labels map[string]string) bool {
-	return labels[types.KubernetesContainerNameLabel] == "POD"
+	return labels[k8sConst.ContainerNameLabel] == "POD"
 
 }
