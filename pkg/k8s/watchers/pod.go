@@ -78,6 +78,10 @@ func (k *K8sWatcher) createPodController(getter cache.Getter, fieldSelector fiel
 						valid = true
 						if oldPod.DeepEqual(newPod) {
 							equal = true
+							log.WithFields(logrus.Fields{
+								"old": oldPod,
+								"new": newPod,
+							}).Info("Equal Pod")
 						} else {
 							err := k.updateK8sPodV1(oldPod, newPod)
 							k.K8sEventProcessed(metricPod, metricUpdate, err == nil)
