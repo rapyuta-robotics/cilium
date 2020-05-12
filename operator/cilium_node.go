@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"reflect"
 
 	"github.com/cilium/cilium/pkg/ipam"
 	"github.com/cilium/cilium/pkg/k8s"
